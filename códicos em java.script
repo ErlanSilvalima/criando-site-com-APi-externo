@@ -1,0 +1,129 @@
+const botao = document.getElementById("btnPesquisar");
+
+botao.addEventListener("click", pesquisarPersonagem);
+
+
+function pesquisarPersonagem() {
+
+    const nome = document
+        .getElementById("pesquisa")
+        .value
+        .trim();
+
+    const resultado = document.getElementById("resultado");
+
+
+    // Verifica se o usuário digitou alguma coisa
+    if (nome === "") {
+
+        resultado.innerHTML = `
+            <p class="erro">
+                Digite o nome de um personagem!
+            </p>
+        `;
+
+        return;
+    }
+
+
+    resultado.innerHTML = `
+        <p>🔄 Pesquisando...</p>
+    `;
+
+
+    // URL da API
+    const url = `https://dragonball-api.com/api/characters?name=${encodeURIComponent(nome)}`;
+
+
+    // AXIOS
+    axios.get(url)
+
+        .then(function(resposta) {
+
+            console.log("Resposta da API:", resposta);
+
+            // Axios coloca os dados dentro de .data
+            const dados = resposta.data;
+
+            console.log("Dados:", dados);
+
+
+            // Verifica se encontrou personagem
+            if (dados.length === 0) {
+
+                resultado.innerHTML = `
+                    <p class="erro">
+                        ❌ Personagem não encontrado!
+                    </p>
+                `;
+
+                return;
+            }
+
+
+            // Pega o primeiro personagem
+            const personagem = dados[0];
+
+
+            // Mostra o personagem
+            resultado.innerHTML = `
+
+                <div class="card">
+
+                    <img
+                        src="${personagem.image}"
+                        alt="${personagem.name}"
+                    >
+
+                    <h2>
+                        ${personagem.name}
+                    </h2>
+
+                    <p>
+                        <strong>Raça:</strong>
+                        ${personagem.race}
+                    </p>
+
+                    <p>
+                        <strong>Gênero:</strong>
+                        ${personagem.gender}
+                    </p>
+
+                    <p>
+                        <strong>Ki:</strong>
+                        ${personagem.ki}
+                    </p>
+
+                    <p>
+                        <strong>Máximo de Ki:</strong>
+                        ${personagem.maxKi}
+                    </p>
+
+                    <p>
+                        <strong>Afiliação:</strong>
+                        ${personagem.affiliation}
+                    </p>
+
+                    <p>
+                        <strong>Descrição:</strong>
+                        ${personagem.description}
+                    </p>
+
+                </div>
+
+            `;
+
+        })
+
+        .catch(function(erro) {
+
+            console.error("Erro:", erro);
+
+            resultado.innerHTML = `
+                <p class="erro">
+                    ❌ Erro ao conectar com a API.
+                </p>
+            `;
+
+        });
+}
